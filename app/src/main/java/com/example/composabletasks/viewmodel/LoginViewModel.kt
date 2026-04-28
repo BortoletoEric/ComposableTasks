@@ -1,4 +1,4 @@
-package com.devmasterteam.tasks.viewmodel
+package com.example.composabletasks.viewmodel
 
 import android.app.Application
 import android.util.Log
@@ -12,7 +12,6 @@ import com.example.composabletasks.service.repository.PersonRepository
 import com.example.composabletasks.service.repository.PriorityRepository
 import com.example.composabletasks.service.repository.local.PreferencesManager
 import com.example.composabletasks.service.repository.remote.RetrofitClient
-import com.example.composabletasks.viewmodel.BaseAndroidViewModel
 import kotlinx.coroutines.launch
 
 class LoginViewModel(application: Application) : BaseAndroidViewModel(application) {
