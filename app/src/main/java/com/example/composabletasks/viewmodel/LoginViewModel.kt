@@ -2,6 +2,9 @@ package com.example.composabletasks.viewmodel
 
 import android.app.Application
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -25,6 +28,20 @@ class LoginViewModel(application: Application) : BaseAndroidViewModel(applicatio
 
     private val _loggedUser = MutableLiveData<Boolean>()
     val loggedUser: LiveData<Boolean> = _loggedUser
+
+    var email by mutableStateOf("")
+        private set // Garante que só o VM pode alterar o valor
+
+    fun onEmailChange(newValue: String) {
+        email = newValue
+    }
+
+    var password by mutableStateOf("")
+        private set
+
+    fun onPasswordChange(newValue: String) {
+        password = newValue
+    }
 
     fun login(email: String, password: String) {
         viewModelScope.launch {

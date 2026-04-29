@@ -27,6 +27,7 @@ import androidx.core.content.ContextCompat
 import com.example.composabletasks.MainActivity
 import com.example.composabletasks.R
 import com.example.composabletasks.viewmodel.LoginViewModel
+import java.util.concurrent.Executor
 
 class LoginActivity : AppCompatActivity() {
     private val viewModel: LoginViewModel by viewModels()
@@ -36,122 +37,115 @@ class LoginActivity : AppCompatActivity() {
 
         viewModel.verifyAuthentication()
 
+// Removemos o ViewBinding e usamos o setContent
         setContent {
-            MaterialTheme {
-                LoginScreen(
-                    viewModel = viewModel,
-                    onNavigateToMain = {
-                        startActivity(Intent(this, MainActivity::class.java))
-                        finish()
-                    },
-                    onNavigateToRegister = {
-                        startActivity(Intent(this, RegisterActivity::class.java))
-                    },
-                    onShowBiometrics = { showAuthentication() }
+            // Aqui chamamos a estrutura da tela que criámos
+            LoginScreen(
+                viewModel = viewModel,
+                onLoginSuccess = {
+                    // Lógica de navegação que estava no teu observador
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                },
+                onRequireBiometrics = {
+                    // Chamamos a tua função de biometria original
+                    showAuthentication()
+                }
+            )
+        }
+    }
+
+    @Composable
+    fun LoginScreen(
+        viewModel: LoginViewModel,
+        onLoginSuccess: () -> Unit,
+        onRequireBiometrics: () -> Unit // Novo callback
+    ) {
+        val context = LocalContext.current
+        val loginResult by viewModel.login.observeAsState()
+        val loggedUser by viewModel.loggedUser.observeAsState()
+
+        // Efeito 1: Resultado do clique no botão Login
+        LaunchedEffect(loginResult) {
+            loginResult?.let {
+                if (it.status()) {
+                    onLoginSuccess()
+                } else {
+                    Toast.makeText(context, it.message(), Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        // Efeito 2: Verificação de usuário já logado na abertura do app
+        LaunchedEffect(loggedUser) {
+            if (loggedUser == true) {
+                onRequireBiometrics()
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            // Logo
+            Spacer(modifier = Modifier.height(64.dp))
+
+            // CustomTextField (E-mail)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // CustomTextField (Senha)
+            Spacer(modifier = Modifier.height(64.dp))
+
+            // PrimaryButton (Login)
+
+            // Empurra o rodapé para o final da tela
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Rodapé com elementos lado a lado
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center // Centraliza os textos na linha
+            ) {
+                Text(text = "Não tem uma conta? ")
+                Text(
+                    text = "Cadastre-se",
+                    modifier = Modifier.clickable {
+                        // Ação para ir para a tela de registro
+                    }
                 )
             }
         }
     }
-
     private fun showAuthentication() {
-        val executor = ContextCompat.getMainExecutor(this)
-        val biometricPrompt = BiometricPrompt(this, executor,
-            object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    startActivity(Intent(applicationContext, MainActivity::class.java))
-                    finish()
-                }
-            })
+        val executor: Executor = ContextCompat.getMainExecutor(this)
+        val biometricPrompt =
+            BiometricPrompt(this, executor,
+                object : BiometricPrompt.AuthenticationCallback() {
+                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                        super.onAuthenticationSucceeded(result)
+
+                        startActivity(Intent(applicationContext, MainActivity::class.java))
+                        finish()
+                    }
+
+                    override fun onAuthenticationFailed() {
+                        super.onAuthenticationFailed()
+                    }
+
+                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                        super.onAuthenticationError(errorCode, errString)
+                        val debug = ""
+                    }
+                })
 
         val info = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Autenticação")
+            .setTitle("Título")
+            .setSubtitle("Subtítulo")
+            .setDescription("Descrição")
             .setNegativeButtonText("Cancelar")
             .build()
+
         biometricPrompt.authenticate(info)
-    }
-}
-
-@Composable
-fun LoginScreen(
-    viewModel: LoginViewModel,
-    onNavigateToMain: () -> Unit,
-    onNavigateToRegister: () -> Unit,
-    onShowBiometrics: () -> Unit
-) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    val context = LocalContext.current
-
-    val loginResult by viewModel.login.observeAsState()
-    val loggedUser by viewModel.loggedUser.observeAsState(false)
-
-    // Side Effects
-    LaunchedEffect(loginResult) {
-        loginResult?.let {
-            if (it.status()) onNavigateToMain()
-            else Toast.makeText(context, it.message(), Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    LaunchedEffect(loggedUser) {
-        if (loggedUser) onShowBiometrics()
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF2C2C2C)) // Substitua pela sua cor de fundo
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        // Substitui o ImageView
-        Image(
-            painter = painterResource(id = R.drawable.ic_logotipo),
-            contentDescription = "Logo",
-            modifier = Modifier.width(200.dp).padding(bottom = 64.dp)
-        )
-
-        // Substitui o EditEmail
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedTextColor = Color.White, focusedTextColor = Color.White
-            )
-        )
-
-        // Substitui o EditPassword
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Senha") },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth().padding(bottom = 64.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedTextColor = Color.White, focusedTextColor = Color.White
-            )
-        )
-
-        // Substitui o Button
-        Button(
-            onClick = { viewModel.login(email, password) },
-            modifier = Modifier.padding(bottom = 32.dp)
-        ) {
-            Text(stringResource(R.string.button_login))
-        }
-
-        // Substitui a base do text_new_account e text_register
-        Row {
-            Text("Não tem conta? ", color = Color.White)
-            Text(
-                text = "Cadastre-se",
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.clickable { onNavigateToRegister() }
-            )
-        }
     }
 }

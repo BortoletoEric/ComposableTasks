@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -30,8 +31,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.composabletasks.ui.theme.ComposableTasksTheme
 import com.example.composabletasks.view.LoginActivity
 import com.example.composabletasks.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
@@ -46,17 +51,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                MainDrawerScreen(
-                    viewModel = viewModel,
-                    onLogout = {
-                        viewModel.logout()
-                        startActivity(Intent(this, LoginActivity::class.java))
-                        finish()
-                    },
-                    onNewTask = {
-                        //startActivity(Intent(this, TaskFormActivity::class.java))
-                    }
-                )
+                // Aplicamos o tema do seu app aqui se já tiver criado (ex: TasksTheme)
+                MainScreen(viewModel)
             }
         }
     }
@@ -64,63 +60,30 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainDrawerScreen(
-    viewModel: MainViewModel,
-    onLogout: () -> Unit,
-    onNewTask: () -> Unit
-) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val coroutineScope = rememberCoroutineScope()
-    val userName by viewModel.name.observeAsState("Usuário")
-
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet {
-                Text("Olá, $userName", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleLarge)
-                HorizontalDivider()
-
-                // Rotas do menu
-                NavigationDrawerItem(
-                    label = { Text("Todas as Tarefas") },
-                    selected = false, // Aqui entrará a lógica de rota ativa futuramente
-                    onClick = { coroutineScope.launch { drawerState.close() } }
-                )
-                NavigationDrawerItem(
-                    label = { Text("Próximas Tarefas") },
-                    selected = false,
-                    onClick = { coroutineScope.launch { drawerState.close() } }
-                )
-                NavigationDrawerItem(
-                    label = { Text("Sair") },
-                    selected = false,
-                    onClick = { onLogout() }
-                )
+fun MainScreen(viewModel: MainViewModel) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Todas as tarefas") },
+                navigationIcon = {
+                    IconButton(onClick = { /* TODO: Abrir Drawer */ }) {
+                        Icon(Icons.Default.Menu, contentDescription = "Menu")
+                    }
+                }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { /* TODO: Navegar para TaskFormActivity */ },
+                containerColor = Color(0xFF03DAC5) // Cor aproximada do seu FAB
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Adicionar", tint = Color.White)
             }
         }
-    ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Tarefas") },
-                    navigationIcon = {
-                        IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu")
-                        }
-                    }
-                )
-            },
-            floatingActionButton = {
-                FloatingActionButton(onClick = onNewTask) {
-                    Icon(Icons.Default.Add, contentDescription = "Nova Tarefa")
-                }
-            }
-        ) { paddingValues ->
-            // O conteúdo da tela principal (seu NavHost ou a AllTasksScreen) vai aqui.
-            // Temporariamente, renderizamos uma tela vazia apenas com o padding do Scaffold.
-            Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-                Text("Conteúdo da tela aqui", modifier = Modifier.padding(16.dp))
-            }
+    ) { paddingValues ->
+        // O conteúdo principal (lista de tarefas) ficará aqui dentro
+        Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+            Text("As tarefas aparecerão aqui em breve!", modifier = Modifier.align(Alignment.Center))
         }
     }
 }
