@@ -30,8 +30,8 @@ class RegisterActivity : AppCompatActivity() {
             MaterialTheme {
                 RegisterScreen(
                     viewModel = viewModel,
-                    onNavigateToMain = {
-                        startActivity(Intent(this, MainActivity::class.java))
+                    onRegisterSuccess = {
+                        startActivity(Intent(applicationContext, MainActivity::class.java))
                         finish()
                     }
                 )
@@ -43,25 +43,17 @@ class RegisterActivity : AppCompatActivity() {
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel,
-    onNavigateToMain: () -> Unit
+    onRegisterSuccess: () -> Unit
 ) {
-    // Gestão de estado local para os campos de texto
-    var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-
     val context = LocalContext.current
+    val registerResult by viewModel.createUser.observeAsState() // Observa a criação[cite: 6]
 
-    // Observação do LiveData do ViewModel
-    val createUserResult by viewModel.createUser.observeAsState()
-
-    // Lida com o resultado da criação (Navegação ou Erro)
-    LaunchedEffect(createUserResult) {
-        createUserResult?.let { validation ->
-            if (validation.status()) {
-                onNavigateToMain()
+    LaunchedEffect(registerResult) {
+        registerResult?.let {
+            if (it.status()) {
+                onRegisterSuccess()
             } else {
-                Toast.makeText(context, validation.message(), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, it.message(), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -69,46 +61,46 @@ fun RegisterScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFF1E0B4B)) // Mesma cor do login
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text(stringResource(R.string.hint_name)) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 8.dp)
+        Spacer(modifier = Modifier.height(64.dp))
+
+        CustomTextField(
+            value = viewModel.name,
+            onValueChange = { viewModel.onNameChange(it) },
+            label = "Nome",
+            modifier = Modifier.fillMaxWidth()
         )
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text(stringResource(R.string.hint_email)) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        CustomTextField(
+            value = viewModel.email,
+            onValueChange = { viewModel.onEmailChange(it) },
+            label = "E-mail",
+            modifier = Modifier.fillMaxWidth()
         )
 
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text(stringResource(R.string.hint_password)) },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        CustomTextField(
+            value = viewModel.password,
+            onValueChange = { viewModel.onPasswordChange(it) },
+            label = "Senha",
+            isPassword = true,
+            modifier = Modifier.fillMaxWidth()
         )
 
-        // Empurra o botão para a parte inferior do ecrã
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.weight(1f)) // Empurra o botão para baixo
 
-        Button(
-            onClick = { viewModel.create(name, email, password) },
-            modifier = Modifier.padding(bottom = 16.dp)
-        ) {
-            Text(stringResource(R.string.button_register))
-        }
+        PrimaryButton(
+            text = "CADASTRAR", //
+            onClick = {
+                viewModel.create(viewModel.name, viewModel.email, viewModel.password)
+            },
+            modifier = Modifier.padding(bottom = 32.dp)
+        )
     }
 }

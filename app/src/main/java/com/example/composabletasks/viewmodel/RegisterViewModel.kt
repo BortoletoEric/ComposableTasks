@@ -16,6 +16,18 @@ class RegisterViewModel(application: Application) : BaseAndroidViewModel(applica
     private val _createUser = MutableLiveData<ValidationModel>()
     val createUser: LiveData<ValidationModel> = _createUser
 
+    var name by mutableStateOf("")
+        private set
+    fun onNameChange(newValue: String) { name = newValue }
+
+    var email by mutableStateOf("")
+        private set
+    fun onEmailChange(newValue: String) { email = newValue }
+
+    var password by mutableStateOf("")
+        private set
+    fun onPasswordChange(newValue: String) { password = newValue }
+
     fun create(name: String, email: String, password: String) {
         viewModelScope.launch {
             try {
