@@ -16,7 +16,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.example.composabletasks.MainActivity
 import com.example.composabletasks.R
 import com.example.composabletasks.viewmodel.RegisterViewModel
 

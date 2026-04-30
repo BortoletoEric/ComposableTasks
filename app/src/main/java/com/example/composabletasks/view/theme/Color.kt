@@ -1,4 +1,4 @@
-package com.example.composabletasks.ui.theme
+package com.example.composabletasks.view.theme
 
 import androidx.compose.ui.graphics.Color
 
