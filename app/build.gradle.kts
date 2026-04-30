@@ -1,15 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
 }
 
 android {
     namespace = "com.example.composabletasks"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.composabletasks"
-        minSdk = 29
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -58,6 +60,7 @@ dependencies {
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.biometric)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.androidx.compose.runtime)
 
