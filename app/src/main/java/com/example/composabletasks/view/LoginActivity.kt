@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,10 +22,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.example.composabletasks.view.components.CustomTextField
+import com.example.composabletasks.view.components.PrimaryButton
 import com.example.composabletasks.viewmodel.LoginViewModel
 import java.util.concurrent.Executor
 
@@ -36,90 +42,111 @@ class LoginActivity : AppCompatActivity() {
 
         viewModel.verifyAuthentication()
 
-// Removemos o ViewBinding e usamos o setContent
         setContent {
             // Aqui chamamos a estrutura da tela que criámos
             LoginScreen(
                 viewModel = viewModel,
-                onLoginSuccess = {
-                    // Lógica de navegação que estava no teu observador
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
-                },
-                onRequireBiometrics = {
-                    // Chamamos a tua função de biometria original
-                    showAuthentication()
+                onLoginSuccess = { navigateToMain() },
+                onRequireBiometrics = { showAuthentication() },
+                onNavigateToRegister = {
+                    startActivity(Intent(this, RegisterActivity::class.java))
                 }
             )
         }
     }
 
+    // LoginScreen.kt no pacote components (ou screens)
     @Composable
     fun LoginScreen(
         viewModel: LoginViewModel,
         onLoginSuccess: () -> Unit,
-        onRequireBiometrics: () -> Unit // Novo callback
+        onRequireBiometrics: () -> Unit,
+        onNavigateToRegister: () -> Unit
     ) {
         val context = LocalContext.current
         val loginResult by viewModel.login.observeAsState()
         val loggedUser by viewModel.loggedUser.observeAsState()
 
-        // Efeito 1: Resultado do clique no botão Login
+        // Observa o resultado do botão "LOGIN"
         LaunchedEffect(loginResult) {
             loginResult?.let {
-                if (it.status()) {
-                    onLoginSuccess()
-                } else {
-                    Toast.makeText(context, it.message(), Toast.LENGTH_SHORT).show()
-                }
+                if (it.status()) onLoginSuccess()
+                else Toast.makeText(context, it.message(), Toast.LENGTH_SHORT).show()
             }
         }
 
-        // Efeito 2: Verificação de usuário já logado na abertura do app
+        // Observa a verificação automática de token (Auth Guard)
         LaunchedEffect(loggedUser) {
             if (loggedUser == true) {
                 onRequireBiometrics()
             }
         }
 
+        // Interface Visual (UI Completa)
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .background(Color(0xFF1E0B4B)) // Substitua pela cor exata do seu background
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Logo
             Spacer(modifier = Modifier.height(64.dp))
 
-            // CustomTextField (E-mail)
+            // Adicione o componente de imagem da sua Logo aqui
+
+            Spacer(modifier = Modifier.height(64.dp))
+
+            CustomTextField(
+                value = viewModel.email,
+                onValueChange = { viewModel.onEmailChange(it) },
+                label = "E-mail",
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Spacer(modifier = Modifier.height(16.dp))
 
-            // CustomTextField (Senha)
+            CustomTextField(
+                value = viewModel.password,
+                onValueChange = { viewModel.onPasswordChange(it) },
+                label = "Senha",
+                isPassword = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Spacer(modifier = Modifier.height(64.dp))
 
-            // PrimaryButton (Login)
+            PrimaryButton(
+                text = "LOGIN",
+                onClick = { viewModel.login(viewModel.email, viewModel.password) }
+            )
 
-            // Empurra o rodapé para o final da tela
             Spacer(modifier = Modifier.weight(1f))
 
-            // Rodapé com elementos lado a lado
+            // Rodapé de Cadastro
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center // Centraliza os textos na linha
+                horizontalArrangement = Arrangement.Center
             ) {
                 Text(text = "Não tem uma conta? ")
                 Text(
                     text = "Cadastre-se",
-                    modifier = Modifier.clickable {
-                        // Ação para ir para a tela de registro
-                    }
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable { onNavigateToRegister() }
                 )
             }
         }
     }
+
+    private fun navigateToMain() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
+    }
+
     private fun showAuthentication() {
         val executor: Executor = ContextCompat.getMainExecutor(this)
         val biometricPrompt =
-            BiometricPrompt(this, executor,
+            BiometricPrompt(
+                this, executor,
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
