@@ -3,6 +3,7 @@ package com.example.composabletasks.view
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -27,7 +28,7 @@ import com.example.composabletasks.view.components.CustomTextField
 import com.example.composabletasks.view.components.PrimaryButton
 import com.example.composabletasks.viewmodel.RegisterViewModel
 
-class RegisterActivity : AppCompatActivity() {
+class RegisterActivity : ComponentActivity() {
 
     private val viewModel: RegisterViewModel by viewModels()
 
