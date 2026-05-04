@@ -1,4 +1,4 @@
-package com.example.composabletasks.view.theme
+package com.example.composabletasks.ui.themes
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

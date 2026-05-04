@@ -1,6 +1,10 @@
 package com.example.composabletasks.viewmodel
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -11,6 +15,9 @@ import com.example.composabletasks.service.repository.PriorityRepository
 import com.example.composabletasks.service.repository.TaskRepository
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel para a tela de lista de tarefas.
+ */
 class TaskListViewModel(application: Application) : BaseAndroidViewModel(application) {
 
     private val taskRepository = TaskRepository(application.applicationContext)

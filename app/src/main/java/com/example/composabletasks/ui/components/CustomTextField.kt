@@ -1,4 +1,4 @@
-package com.example.composabletasks.view.components
+package com.example.composabletasks.ui.components
 
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
