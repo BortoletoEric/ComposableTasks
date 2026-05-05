@@ -13,6 +13,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.Modifier
 import com.example.composabletasks.service.constants.TaskConstants
 import com.example.composabletasks.ui.screens.TaskFormScreen
+import com.example.composabletasks.ui.themes.ComposableTasksTheme
 import com.example.composabletasks.viewmodel.TaskFormViewModel
 
 class TaskFormActivity : AppCompatActivity() {
@@ -30,16 +31,20 @@ class TaskFormActivity : AppCompatActivity() {
         }
 
         setContent {
-            Scaffold(
-                topBar = {
-                    TopAppBar(title = { Text(if (taskId == 0) "Nova Tarefa" else "Editar Tarefa") })
-                }
-            ) { paddingValues ->
-                Box(modifier = Modifier.padding(paddingValues)) {
-                    TaskFormScreen(
-                        viewModel = viewModel,
-                        onSaveSuccess = { finish() }
-                    )
+            ComposableTasksTheme {
+                Scaffold(
+                    topBar = {
+                        TopAppBar(title = { Text(if (taskId == 0) "Nova Tarefa" else "Editar Tarefa") })
+                    }
+                ) { paddingValues ->
+                    Box(modifier = Modifier.padding(paddingValues)) {
+                        TaskFormScreen(
+                            viewModel = viewModel,
+                            onSaveSuccess = {
+                                finish()
+                            }
+                        )
+                    }
                 }
             }
         }

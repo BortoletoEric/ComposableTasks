@@ -9,12 +9,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,6 +35,7 @@ import com.example.composabletasks.ui.components.PrimaryButton
 import com.example.composabletasks.viewmodel.TaskFormViewModel
 
 // 1. Função Stateless (Totalmente visual, recebe apenas valores e eventos)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskFormContent(
     description: String,
@@ -37,6 +47,39 @@ fun TaskFormContent(
     priorities: List<PriorityModel>,
     onSaveClick: () -> Unit
 ) {
+    // 1. Estado para controlar a exibição do calendário
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+
+    // 2. Lógica do DatePickerDialog
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        // Formatação correta com fuso UTC para evitar o bug de "-1 dia"
+                        val formatter = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale("pt", "BR"))
+                        formatter.timeZone = java.util.TimeZone.getTimeZone("UTC")
+                        val formattedDate = formatter.format(java.util.Date(millis))
+
+                        onDueDateChange(formattedDate)
+                    }
+                    showDatePicker = false
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("Cancelar")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -49,6 +92,21 @@ fun TaskFormContent(
             label = "Descrição da tarefa",
             modifier = Modifier.fillMaxWidth()
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // 3. Botão que substitui o BasicTextField original
+        OutlinedButton(
+            onClick = { showDatePicker = true },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp) // Altura padrão de campos de texto no Material Design
+        ) {
+            Text(
+                // Exibe a data selecionada ou o texto padrão se estiver vazio
+                text = if (dueDate.isEmpty()) "Data Limite" else dueDate// Ajuste para a cor do seu tema se necessário
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -68,15 +126,6 @@ fun TaskFormContent(
                 }
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        BasicTextField(
-            value = dueDate,
-            onValueChange = onDueDateChange,
-            label = "Data limite",
-            modifier = Modifier.fillMaxWidth()
-        )
 
         Spacer(modifier = Modifier.weight(1f))
 

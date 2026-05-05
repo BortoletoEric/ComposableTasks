@@ -27,6 +27,7 @@ import com.example.composabletasks.R
 import com.example.composabletasks.ui.components.CustomTextField
 import com.example.composabletasks.ui.components.PrimaryButton
 import com.example.composabletasks.ui.screens.RegisterScreen
+import com.example.composabletasks.ui.themes.ComposableTasksTheme
 import com.example.composabletasks.viewmodel.RegisterViewModel
 
 class RegisterActivity : ComponentActivity() {
@@ -37,7 +38,7 @@ class RegisterActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MaterialTheme {
+            ComposableTasksTheme {
                 RegisterScreen(
                     viewModel = viewModel,
                     onRegisterSuccess = {

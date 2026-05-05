@@ -49,8 +49,7 @@ fun TaskItem(
             Column(modifier = Modifier.weight(1f).padding(start = 8.dp)) {
                 Text(
                     text = task.description,
-                    fontSize = 16.sp,
-                    color = Color.White
+                    fontSize = 16.sp
                 )
                 Text(
                     text = task.priorityDescription, // Você já tem isso no TaskModel[cite: 4]
@@ -62,7 +61,6 @@ fun TaskItem(
             Text(
                 text = task.dueDate,
                 fontSize = 12.sp,
-                color = Color.White,
                 modifier = Modifier.align(Alignment.Top)
             )
         }

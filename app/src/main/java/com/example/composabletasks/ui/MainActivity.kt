@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
 import com.example.composabletasks.service.constants.TaskConstants
 import com.example.composabletasks.ui.screens.MainScreen
+import com.example.composabletasks.ui.themes.ComposableTasksTheme
 import com.example.composabletasks.viewmodel.MainViewModel
 import com.example.composabletasks.viewmodel.TaskListViewModel
 
@@ -23,26 +24,24 @@ class MainActivity : ComponentActivity() {
         mainViewModel.loadUserName()
 
         setContent {
-            MaterialTheme {
-                setContent {
-                    MainScreen(
-                        mainViewModel = mainViewModel,
-                        onLogout = {
-                            mainViewModel.logout()
-                            startActivity(Intent(applicationContext, LoginActivity::class.java))
-                            finish()
-                        },
-                        onNavigateToTaskForm = { taskId ->
-                            val intent = Intent(applicationContext, TaskFormActivity::class.java)
-                            // Se o ID for diferente de 0, envia para edição
-                            if (taskId != 0) {
-                                intent.putExtra(TaskConstants.BUNDLE.TASKID, taskId)
-                            }
-                            startActivity(intent)
-                        },
-                        taskListViewModel = taskListViewModel
-                    )
-                }
+            ComposableTasksTheme {
+                MainScreen(
+                    mainViewModel = mainViewModel,
+                    onLogout = {
+                        mainViewModel.logout()
+                        startActivity(Intent(applicationContext, LoginActivity::class.java))
+                        finish()
+                    },
+                    onNavigateToTaskForm = { taskId ->
+                        val intent = Intent(applicationContext, TaskFormActivity::class.java)
+                        // Se o ID for diferente de 0, envia para edição
+                        if (taskId != 0) {
+                            intent.putExtra(TaskConstants.BUNDLE.TASKID, taskId)
+                        }
+                        startActivity(intent)
+                    },
+                    taskListViewModel = taskListViewModel
+                )
             }
         }
     }

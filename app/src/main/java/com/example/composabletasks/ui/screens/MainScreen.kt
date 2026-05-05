@@ -26,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.example.composabletasks.service.constants.TaskConstants
 import com.example.composabletasks.viewmodel.MainViewModel
 import com.example.composabletasks.viewmodel.TaskListViewModel
@@ -50,10 +51,18 @@ fun MainScreen(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet(drawerContainerColor = Color(0xFF303030)) {
-                // ... (Header com userName) ...
+                Text(
+                    text = "Olá, $userName",
+                    modifier = Modifier.padding(16.dp)
+                )
 
                 NavigationDrawerItem(
-                    label = { Text("Todas as tarefas") },
+                    label = {
+                        Text(
+                            text = "Todas as tarefas",
+                            color = Color.White
+                        )
+                    },
                     selected = currentFilter == TaskConstants.FILTER.ALL,
                     onClick = {
                         currentFilter = TaskConstants.FILTER.ALL //
@@ -61,7 +70,12 @@ fun MainScreen(
                     }
                 )
                 NavigationDrawerItem(
-                    label = { Text("Próximos 7 dias") },
+                    label = {
+                        Text(
+                            text = "Próximos 7 dias",
+                            color = Color.White
+                        )
+                    },
                     selected = currentFilter == TaskConstants.FILTER.NEXT,
                     onClick = {
                         currentFilter = TaskConstants.FILTER.NEXT //[cite: 9]
@@ -69,15 +83,26 @@ fun MainScreen(
                     }
                 )
                 NavigationDrawerItem(
-                    label = { Text("Expiradas") },
+                    label = {
+                        Text(
+                            "Expiradas",
+                            color = Color.White
+                        )
+                    },
                     selected = currentFilter == TaskConstants.FILTER.EXPIRED,
                     onClick = {
-                        currentFilter = 123 // Note: use a constante correta do seu else no VM[cite: 9]
+                        currentFilter =
+                            123 // Note: use a constante correta do seu else no VM[cite: 9]
                         scope.launch { drawerState.close() }
                     }
                 )
                 NavigationDrawerItem(
-                    label = { Text("Sair") },
+                    label = {
+                        Text(
+                            "Sair",
+                            color = Color.White
+                        )
+                    },
                     selected = false,
                     onClick = {
                         onLogout()
@@ -91,11 +116,13 @@ fun MainScreen(
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(when(currentFilter) {
-                            TaskConstants.FILTER.NEXT -> "Próximos 7 dias"
-                            TaskConstants.FILTER.ALL -> "Todas as tarefas"
-                            else -> "Expiradas"
-                        })
+                        Text(
+                            when (currentFilter) {
+                                TaskConstants.FILTER.NEXT -> "Próximos 7 dias"
+                                TaskConstants.FILTER.ALL -> "Todas as tarefas"
+                                else -> "Expiradas"
+                            }
+                        )
                     },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {

@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import com.example.composabletasks.ui.screens.LoginScreen
+import com.example.composabletasks.ui.themes.ComposableTasksTheme
 import com.example.composabletasks.viewmodel.LoginViewModel
 import java.util.concurrent.Executor
 
@@ -20,14 +21,16 @@ class LoginActivity : AppCompatActivity() {
         viewModel.verifyAuthentication()
 
         setContent {
-            LoginScreen(
-                viewModel = viewModel,
-                onLoginSuccess = { navigateToMain() },
-                onRequireBiometrics = { showAuthentication() },
-                onNavigateToRegister = {
-                    startActivity(Intent(this, RegisterActivity::class.java))
-                }
-            )
+            ComposableTasksTheme {
+                LoginScreen(
+                    viewModel = viewModel,
+                    onLoginSuccess = { navigateToMain() },
+                    onRequireBiometrics = { showAuthentication() },
+                    onNavigateToRegister = {
+                        startActivity(Intent(this, RegisterActivity::class.java))
+                    }
+                )
+            }
         }
     }
 
