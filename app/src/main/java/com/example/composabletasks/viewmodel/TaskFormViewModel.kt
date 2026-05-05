@@ -1,6 +1,10 @@
 package com.example.composabletasks.viewmodel
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
@@ -17,6 +21,24 @@ class TaskFormViewModel(application: Application) : BaseAndroidViewModel(applica
 
     val priorityList = priorityRepository.list().asLiveData()
 
+    // Variáveis de Estado para o Compose
+    var id by mutableIntStateOf(0)
+        private set
+    var description by mutableStateOf("")
+        private set
+    fun onDescriptionChange(newDesc: String) { description = newDesc }
+
+    var priorityId by mutableIntStateOf(0)
+        private set
+    fun onPriorityChange(newId: Int) { priorityId = newId }
+
+    var dueDate by mutableStateOf("")
+        private set
+    fun onDueDateChange(newDate: String) { dueDate = newDate }
+
+    var complete by mutableStateOf(false)
+        private set
+
     private val _taskSaved = MutableLiveData<ValidationModel>()
     val taskSaved: LiveData<ValidationModel> = _taskSaved
 
@@ -26,7 +48,15 @@ class TaskFormViewModel(application: Application) : BaseAndroidViewModel(applica
     private val _taskLoad = MutableLiveData<ValidationModel>()
     val taskLoad: LiveData<ValidationModel> = _taskLoad
 
-    fun save(task: TaskModel) {
+    fun save() {
+        val task = TaskModel(
+            id = this.id,
+            priorityId = this.priorityId,
+            description = this.description,
+            dueDate = this.dueDate,
+            complete = this.complete
+        )
+
         viewModelScope.launch {
             try {
                 val response = if (task.id == 0) {
@@ -50,7 +80,15 @@ class TaskFormViewModel(application: Application) : BaseAndroidViewModel(applica
             try {
                 val response = taskRepository.load(taskId)
                 if (response.isSuccessful && response.body() != null) {
-                    _task.value = response.body()!!
+                    val loadedTask = response.body()!!
+
+                    // Alimenta os estados para a tela refletir imediatamente
+                    id = loadedTask.id
+                    description = loadedTask.description
+                    priorityId = loadedTask.priorityId
+                    dueDate = loadedTask.dueDate
+                    complete = loadedTask.complete
+
                 } else {
                     _taskLoad.value = parseErrorMessage(response)
                 }

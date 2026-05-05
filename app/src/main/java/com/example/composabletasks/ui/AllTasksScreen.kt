@@ -1,4 +1,4 @@
-package com.example.composabletasks.view
+package com.example.composabletasks.ui
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize

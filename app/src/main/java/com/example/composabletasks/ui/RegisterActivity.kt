@@ -1,4 +1,4 @@
-package com.example.composabletasks.view
+package com.example.composabletasks.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,8 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.composabletasks.view.components.CustomTextField
-import com.example.composabletasks.view.components.PrimaryButton
+import com.example.composabletasks.ui.components.CustomTextField
+import com.example.composabletasks.ui.components.PrimaryButton
 import com.example.composabletasks.viewmodel.RegisterViewModel
 
 class RegisterActivity : ComponentActivity() {
