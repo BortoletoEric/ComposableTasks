@@ -36,7 +36,8 @@ import kotlinx.coroutines.launch
 fun MainScreen(
     mainViewModel: MainViewModel,
     taskListViewModel: TaskListViewModel,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onNavigateToTaskForm: (Int) -> Unit // Callback de navegação
 ) {
     val userName by mainViewModel.name.observeAsState("")
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -114,7 +115,9 @@ fun MainScreen(
                 TaskListScreen(
                     viewModel = taskListViewModel,
                     filter = currentFilter,
-                    onTaskClick = { taskId -> /* Abrir edição */ }
+                    onTaskClick = { taskId ->
+                        onNavigateToTaskForm(taskId) // Repassa o ID da tarefa clicada
+                    }
                 )
             }
         }

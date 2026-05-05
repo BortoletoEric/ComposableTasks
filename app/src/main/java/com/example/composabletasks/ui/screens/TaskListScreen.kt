@@ -20,7 +20,7 @@ fun TaskListScreen(
 ) {
     // 1. Observa a lista de tarefas real vinda do repositório
     val tasks by viewModel.tasks.observeAsState(emptyList())
-    val context = LocalContext.current
+    LocalContext.current
 
     // 2. Dispara a busca sempre que o filtro (All, Next, Overdue) mudar
     LaunchedEffect(filter) {
@@ -31,7 +31,9 @@ fun TaskListScreen(
         items(tasks) { task ->
             TaskItem(
                 task = task,
-                onTaskClick = onTaskClick,
+                onTaskClick = {
+                    onTaskClick(task.id)
+                },
                 onToggleStatus = { id ->
                     // Inverte o status atual usando a função status() do seu VM
                     viewModel.status(id, !task.complete)
