@@ -23,8 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.composabletasks.R
 import com.example.composabletasks.ui.components.CustomTextField
 import com.example.composabletasks.ui.components.PrimaryButton
+import com.example.composabletasks.ui.screens.RegisterScreen
 import com.example.composabletasks.viewmodel.RegisterViewModel
 
 class RegisterActivity : ComponentActivity() {
@@ -45,70 +47,5 @@ class RegisterActivity : ComponentActivity() {
                 )
             }
         }
-    }
-}
-
-@Composable
-fun RegisterScreen(
-    viewModel: RegisterViewModel,
-    onRegisterSuccess: () -> Unit
-) {
-    val context = LocalContext.current
-    val registerResult by viewModel.createUser.observeAsState() // Observa a criação[cite: 6]
-
-    LaunchedEffect(registerResult) {
-        registerResult?.let {
-            if (it.status()) {
-                onRegisterSuccess()
-            } else {
-                Toast.makeText(context, it.message(), Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF1E0B4B)) // Mesma cor do login
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(64.dp))
-
-        CustomTextField(
-            value = viewModel.name,
-            onValueChange = { viewModel.onNameChange(it) },
-            label = "Nome",
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        CustomTextField(
-            value = viewModel.email,
-            onValueChange = { viewModel.onEmailChange(it) },
-            label = "E-mail",
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        CustomTextField(
-            value = viewModel.password,
-            onValueChange = { viewModel.onPasswordChange(it) },
-            label = "Senha",
-            isPassword = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.weight(1f)) // Empurra o botão para baixo
-
-        PrimaryButton(
-            text = "CADASTRAR", //
-            onClick = {
-                viewModel.create(viewModel.name, viewModel.email, viewModel.password)
-            },
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
     }
 }

@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.composabletasks.ui.components.CustomTextField
+import com.example.composabletasks.ui.components.BasicTextField
 import com.example.composabletasks.ui.components.PrimaryButton
 import com.example.composabletasks.viewmodel.TaskFormViewModel
 
@@ -40,7 +40,7 @@ fun TaskFormScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        CustomTextField(
+        BasicTextField(
             value = viewModel.description,
             onValueChange = { viewModel.onDescriptionChange(it) },
             label = "Descrição da tarefa",
@@ -49,7 +49,7 @@ fun TaskFormScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        CustomTextField(
+        BasicTextField(
             value = viewModel.dueDate,
             onValueChange = { viewModel.onDueDateChange(it) },
             label = "Data de vencimento (Ex: 31/12/2026)",
