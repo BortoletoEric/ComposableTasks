@@ -1,6 +1,7 @@
 package com.example.composabletasks.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composabletasks.R
@@ -23,12 +25,16 @@ import com.example.composabletasks.service.model.TaskModel
 fun TaskItem(
     task: TaskModel,
     onTaskClick: (Int) -> Unit,
+    onTaskLongClick: (Int) -> Unit,
     onToggleStatus: (Int) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onTaskClick(task.id) }
+            .combinedClickable(
+                onClick = { onTaskClick(task.id) },
+                onLongClick = { onTaskLongClick(task.id) }
+            )
             .padding(12.dp)
     ) {
         Row(
@@ -70,4 +76,45 @@ fun TaskItem(
             color = Color.Gray
         )
     }
+}
+
+@Preview(showBackground = true, name = "Tarefa Concluída")
+@Composable
+fun TaskItemDonePreview() {
+    // Como os campos são 'val', passamos os valores diretamente no construtor
+    val mockTask = TaskModel(
+        id = 2,
+        priorityId = 1,
+        description = "Finalizar curso de Android",
+        dueDate = "15/05/2026",
+        complete = true,
+        priorityDescription = "Média"
+    )
+
+    TaskItem(
+        task = mockTask,
+        onTaskClick = {},
+        onTaskLongClick = {},
+        onToggleStatus = {}
+    )
+}
+
+@Preview(showBackground = true, name = "Tarefa Pendente")
+@Composable
+fun TaskItemTodoPreview() {
+    val mockTask = TaskModel(
+        id = 1,
+        priorityId = 2,
+        description = "Estudar Jetpack Compose",
+        dueDate = "20/05/2026",
+        complete = false,
+        priorityDescription = "Alta"
+    )
+
+    TaskItem(
+        task = mockTask,
+        onTaskClick = {},
+        onTaskLongClick = {},
+        onToggleStatus = {}
+    )
 }
