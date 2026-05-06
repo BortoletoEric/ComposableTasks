@@ -38,6 +38,7 @@ class TaskFormViewModel(application: Application) : BaseAndroidViewModel(applica
 
     var complete by mutableStateOf(false)
         private set
+    fun onTaskCompletedChange(newStatus: Boolean) { complete = newStatus }
 
     private val _taskSaved = MutableLiveData<ValidationModel>()
     val taskSaved: LiveData<ValidationModel> = _taskSaved

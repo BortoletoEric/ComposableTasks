@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -26,13 +28,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.composabletasks.R
 import com.example.composabletasks.service.model.PriorityModel
 import com.example.composabletasks.ui.components.BasicTextField
 import com.example.composabletasks.ui.components.PrimaryButton
 import com.example.composabletasks.viewmodel.TaskFormViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 // 1. Função Stateless (Totalmente visual, recebe apenas valores e eventos)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,6 +53,8 @@ fun TaskFormContent(
     onDueDateChange: (String) -> Unit,
     priorityId: Int,
     onPriorityChange: (Int) -> Unit,
+    onTaskCompletedChange: (Boolean) -> Unit,
+    isCompleted: Boolean,
     priorities: List<PriorityModel>,
     onSaveClick: () -> Unit
 ) {
@@ -59,9 +70,10 @@ fun TaskFormContent(
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
                         // Formatação correta com fuso UTC para evitar o bug de "-1 dia"
-                        val formatter = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale("pt", "BR"))
-                        formatter.timeZone = java.util.TimeZone.getTimeZone("UTC")
-                        val formattedDate = formatter.format(java.util.Date(millis))
+                        val formatter =
+                            SimpleDateFormat("dd/MM/yyyy", Locale("pt", "BR"))
+                        formatter.timeZone = TimeZone.getTimeZone("UTC")
+                        val formattedDate = formatter.format(Date(millis))
 
                         onDueDateChange(formattedDate)
                     }
@@ -106,6 +118,33 @@ fun TaskFormContent(
                 // Exibe a data selecionada ou o texto padrão se estiver vazio
                 text = if (dueDate.isEmpty()) "Data Limite" else dueDate// Ajuste para a cor do seu tema se necessário
             )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("Status da Tarefa", modifier = Modifier.align(Alignment.Start))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Ícone de Status (Mesmo comportamento do TaskItem)
+                IconButton(onClick = {
+                    // Inverte o estado atual (se era true vira false e vice-versa)
+                    onTaskCompletedChange(!isCompleted)
+                }) {
+                    Icon(
+                        painter = painterResource(
+                            id = if (isCompleted) R.drawable.ic_done else R.drawable.ic_todo
+                        ),
+                        contentDescription = null,
+                        tint = if (isCompleted) Color(0xFF4CAF50) else Color.DarkGray
+                    )
+                }
+                // Texto descritivo ao lado do ícone
+                Text(text = if (isCompleted) "Tarefa Completa" else "Tarefa Pendente")
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -165,7 +204,9 @@ fun TaskFormScreen(
         priorityId = viewModel.priorityId,
         onPriorityChange = { viewModel.onPriorityChange(it) },
         priorities = priorities,
-        onSaveClick = { viewModel.save() }
+        onSaveClick = { viewModel.save() },
+        onTaskCompletedChange = { viewModel.onTaskCompletedChange(it) },
+        isCompleted = viewModel.complete
     )
 }
 
@@ -186,6 +227,8 @@ fun TaskFormScreenPreview() {
             PriorityModel(id = 2, description = "Média"),
             PriorityModel(id = 3, description = "Alta")
         ),
-        onSaveClick = {}
+        onSaveClick = {},
+        onTaskCompletedChange = {},
+        isCompleted = true
     )
 }

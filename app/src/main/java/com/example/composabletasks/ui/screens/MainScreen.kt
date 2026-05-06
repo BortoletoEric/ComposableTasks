@@ -53,7 +53,8 @@ fun MainScreen(
             ModalDrawerSheet(drawerContainerColor = Color(0xFF303030)) {
                 Text(
                     text = "Olá, $userName",
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp),
+                    color = Color.White
                 )
 
                 NavigationDrawerItem(
@@ -132,7 +133,9 @@ fun MainScreen(
                 )
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = { /* Navegar para TaskFormActivity */ }) {
+                FloatingActionButton(onClick = {
+                    onNavigateToTaskForm(0)
+                }) {
                     Icon(Icons.Default.Add, contentDescription = null)
                 }
             }
