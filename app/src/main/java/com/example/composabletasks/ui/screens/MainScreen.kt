@@ -26,8 +26,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composabletasks.service.constants.TaskConstants
+import com.example.composabletasks.service.model.TaskModel
 import com.example.composabletasks.viewmodel.MainViewModel
 import com.example.composabletasks.viewmodel.TaskListViewModel
 import kotlinx.coroutines.launch
@@ -93,7 +95,7 @@ fun MainScreen(
                     selected = currentFilter == TaskConstants.FILTER.EXPIRED,
                     onClick = {
                         currentFilter =
-                            123 // Note: use a constante correta do seu else no VM[cite: 9]
+                            TaskConstants.FILTER.EXPIRED // Note: use a constante correta do seu else no VM[cite: 9]
                         scope.launch { drawerState.close() }
                     }
                 )
@@ -149,6 +151,204 @@ fun MainScreen(
                         onNavigateToTaskForm(taskId) // Repassa o ID da tarefa clicada
                     }
                 )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+@Preview(showBackground = true)
+fun ModalDrawerSheetOpenedPreview() {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
+    var currentFilter = 0
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet(drawerContainerColor = Color(0xFF303030)) {
+                Text(
+                    text = "Olá, Usuário",
+                    modifier = Modifier.padding(16.dp),
+                    color = Color.White
+                )
+
+                NavigationDrawerItem(
+                    label = {
+                        Text(
+                            text = "Todas as tarefas",
+                            color = Color.White
+                        )
+                    },
+                    selected = currentFilter == TaskConstants.FILTER.ALL,
+                    onClick = {
+                        currentFilter = TaskConstants.FILTER.ALL
+                    }
+                )
+                NavigationDrawerItem(
+                    label = {
+                        Text(
+                            text = "Próximos 7 dias",
+                            color = Color.White
+                        )
+                    },
+                    selected = currentFilter == TaskConstants.FILTER.NEXT,
+                    onClick = {
+                        currentFilter = TaskConstants.FILTER.NEXT
+                    }
+                )
+                NavigationDrawerItem(
+                    label = {
+                        Text(
+                            "Expiradas",
+                            color = Color.White
+                        )
+                    },
+                    selected = false,
+                    onClick = {
+                        TaskConstants.FILTER.EXPIRED
+                    }
+                )
+                NavigationDrawerItem(
+                    label = {
+                        Text(
+                            "Sair",
+                            color = Color.White
+                        )
+                    },
+                    selected = false,
+                    onClick = {}
+                )
+            }
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            when (currentFilter) {
+                                TaskConstants.FILTER.NEXT -> "Próximos 7 dias"
+                                TaskConstants.FILTER.ALL -> "Todas as tarefas"
+                                else -> "Expiradas"
+                            }
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { /* Mock handler for drawer icon click */ }) {
+                            Icon(Icons.Default.Menu, contentDescription = null)
+                        }
+                    }
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(onClick = { /* Mock handler for FAB click */ }) {
+                    Icon(Icons.Default.Add, contentDescription = null)
+                }
+            }
+        ) { paddingValues ->
+            Column(modifier = Modifier.padding(paddingValues)) {
+                // A TaskListScreen agora recebe o filtro dinâmico
+                TaskListScreenPreview()
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+@Preview(showBackground = true)
+fun ModalDrawerSheetClosedPreview() {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    var currentFilter = 0
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet(drawerContainerColor = Color(0xFF303030)) {
+                Text(
+                    text = "Olá, Usuário",
+                    modifier = Modifier.padding(16.dp),
+                    color = Color.White
+                )
+
+                NavigationDrawerItem(
+                    label = {
+                        Text(
+                            text = "Todas as tarefas",
+                            color = Color.White
+                        )
+                    },
+                    selected = currentFilter == TaskConstants.FILTER.ALL,
+                    onClick = {
+                        currentFilter = TaskConstants.FILTER.ALL
+                    }
+                )
+                NavigationDrawerItem(
+                    label = {
+                        Text(
+                            text = "Próximos 7 dias",
+                            color = Color.White
+                        )
+                    },
+                    selected = currentFilter == TaskConstants.FILTER.NEXT,
+                    onClick = {
+                        currentFilter = TaskConstants.FILTER.NEXT
+                    }
+                )
+                NavigationDrawerItem(
+                    label = {
+                        Text(
+                            "Expiradas",
+                            color = Color.White
+                        )
+                    },
+                    selected = false,
+                    onClick = {
+                        TaskConstants.FILTER.EXPIRED
+                    }
+                )
+                NavigationDrawerItem(
+                    label = {
+                        Text(
+                            "Sair",
+                            color = Color.White
+                        )
+                    },
+                    selected = false,
+                    onClick = {}
+                )
+            }
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            when (currentFilter) {
+                                TaskConstants.FILTER.NEXT -> "Próximos 7 dias"
+                                TaskConstants.FILTER.ALL -> "Todas as tarefas"
+                                else -> "Expiradas"
+                            }
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { /* Mock handler for drawer icon click */ }) {
+                            Icon(Icons.Default.Menu, contentDescription = null)
+                        }
+                    }
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(onClick = { /* Mock handler for FAB click */ }) {
+                    Icon(Icons.Default.Add, contentDescription = null)
+                }
+            }
+        ) { paddingValues ->
+            Column(modifier = Modifier.padding(paddingValues)) {
+                // A TaskListScreen agora recebe o filtro dinâmico
+                TaskListScreenPreview()
             }
         }
     }
