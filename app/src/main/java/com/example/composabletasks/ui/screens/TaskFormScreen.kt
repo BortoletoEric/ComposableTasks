@@ -116,19 +116,22 @@ fun TaskFormContent(
         ) {
             Text(
                 // Exibe a data selecionada ou o texto padrão se estiver vazio
-                text = if (dueDate.isEmpty()) "Data Limite" else dueDate// Ajuste para a cor do seu tema se necessário
+                text = dueDate.ifEmpty { "Data Limite" }// Ajuste para a cor do seu tema se necessário
             )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text("Status da Tarefa", modifier = Modifier.align(Alignment.Start))
+        Text("Status da Tarefa", modifier = Modifier.align(Alignment.CenterHorizontally))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
+
+                Spacer(modifier = Modifier.weight(1f))
+
                 // Ícone de Status (Mesmo comportamento do TaskItem)
                 IconButton(onClick = {
                     // Inverte o estado atual (se era true vira false e vice-versa)
@@ -144,6 +147,8 @@ fun TaskFormContent(
                 }
                 // Texto descritivo ao lado do ícone
                 Text(text = if (isCompleted) "Tarefa Completa" else "Tarefa Pendente")
+
+                Spacer(modifier = Modifier.weight(1f))
             }
         }
 

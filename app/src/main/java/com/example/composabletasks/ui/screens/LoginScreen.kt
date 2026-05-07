@@ -100,6 +100,8 @@ fun LoginContent(
                 modifier = Modifier.clickable { onNavigateToRegister() }
             )
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
